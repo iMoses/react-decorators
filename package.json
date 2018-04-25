@@ -4,6 +4,7 @@
   "description": "A collection of react decorators to enhance components capabilities",
   "main": "./index.js",
   "scripts": {
+    "preversion": "npm test",
     "test": "npx mocha --require babel-register tests/"
   },
   "repository": {

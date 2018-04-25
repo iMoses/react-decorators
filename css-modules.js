@@ -9,7 +9,9 @@ module.exports = function cssModules(styles) {
                 return transformElement(Component(props), classNames.bind(styles));
             };
         }
-        function StyledComponent(){}
+        function StyledComponent() {
+            Component.prototype.constructor.apply(this, arguments);
+        }
         utils.classInheritance(StyledComponent, Component);
         StyledComponent.prototype.render = function() {
             return transformElement(
