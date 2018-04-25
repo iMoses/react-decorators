@@ -1,10 +1,7 @@
-import React from 'react';
-import { expect } from 'chai';
-import Enzyme, { shallow } from 'enzyme';
-import Adapter from 'enzyme-adapter-react-16';
 import cssModules from '../css-modules';
-
-Enzyme.configure({adapter: new Adapter});
+import { shallow } from 'enzyme';
+import { expect } from 'chai';
+import React from 'react';
 
 describe('@cssModules', () => {
 

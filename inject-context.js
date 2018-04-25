@@ -1,7 +1,7 @@
 var reduce = require('lodash/reduce');
 var React = require('react');
 
-module.exports = function consumeContext(consumersMap) {
+module.exports = function injectContext(consumersMap) {
     return function(Compoent) {
         return reduce(consumersMap, reducer, Compoent);
     };
