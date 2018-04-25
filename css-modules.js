@@ -1,29 +1,59 @@
-import React from 'react';
-import classNames from 'classnames/bind';
+var classNames = require('classnames/bind');
+var utils = require('./utils');
+var React = require('react');
 
-export default styles => Component => isStateless(Component)
-    ? props => transformElement(Component(props), classNames.bind(styles))
-    : class StyledComponent extends Component {
-        render() { return transformElement(super.render(), classNames.bind(styles)); }
+module.exports = function cssModules(styles) {
+    return function(Component) {
+        if (utils.isStatelessComponent(Component)) {
+            return function(props) {
+                return transformElement(Component(props), classNames.bind(styles));
+            };
+        }
+        function StyledComponent(){}
+        utils.classInheritance(StyledComponent, Component);
+        StyledComponent.prototype.render = function() {
+            return transformElement(
+                Component.prototype.render.apply(this, arguments),
+                classNames.bind(styles)
+            );
+        };
+        return StyledComponent;
     };
-
-function extend(obj, prop, value) {
-    obj && (obj[prop] = value);
-    return obj;
-}
+};
 
 function transformElement(el, cx) {
-    if (!el || !el.props) {
-        // no props currently means that this is in fact a portal, not an element
-        // therefore we only transform the children, we cannot clone it
-        return extend(el, 'children', recursiveTransform(el.children, cx));
+    if (el) {
+        if (el.props) {
+            var props = Object.assign({}, el.props);
+            Object.keys(props).forEach(function(propName) {
+                if (React.isValidElement(props[propName])) {
+                    props[propName] = transformElement(props[propName], cx);
+                }
+            });
+            if (props.className) {
+                props.className = cx(splitStrings(props.className));
+            }
+            el = React.cloneElement(el, props, recursiveTransform(props.children, cx));
+        }
+        else {
+            // no props currently means that this is in fact a portal, not an element
+            // therefore we only transform the children, we cannot clone it
+            el.children = recursiveTransform(el.children, cx);
+        }
     }
+    return el;
+}
 
-    let className = el.props.className;
-    if (className) {
-        className = cx(splitStrings(className));
+function recursiveTransform(el, cx) {
+    if (React.isValidElement(el)) {
+        return transformElement(el, cx);
     }
-    return React.cloneElement(el, {...el.props, className}, recursiveTransform(el.props.children, cx));
+    if (Array.isArray(el)) {
+        return React.Children.map(el, function(child) {
+            return recursiveTransform(child, cx);
+        });
+    }
+    return el;
 }
 
 function splitStrings(className) {
@@ -34,18 +64,4 @@ function splitStrings(className) {
         return className.split(/\s+/g);
     }
     return className;
-}
-
-function recursiveTransform(el, cx) {
-    if (React.isValidElement(el)) {
-        return transformElement(el, cx);
-    }
-    if (Array.isArray(el)) {
-        return React.Children.map(el, child => recursiveTransform(child, cx));
-    }
-    return el;
-}
-
-function isStateless(Component) {
-    return !('prototype' in Component && typeof Component.prototype.render === 'function');
 }

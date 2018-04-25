@@ -1,2 +1,3 @@
-export consumeContext from './consume-context';
-export cssModules from './css-modules';
+var lib = module.exports;
+lib.consumeContext = require('./consume-context');
+lib.cssModules     = require('./css-modules');

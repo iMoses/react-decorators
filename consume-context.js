@@ -1,7 +1,17 @@
-import React from 'react';
-import reduce from 'lodash/reduce';
+var reduce = require('lodash/reduce');
+var React = require('react');
 
-export default consumersMap => Compoent =>
-    reduce(consumersMap, (Compoent, Consumer, propName) =>
-            props => <Consumer>{value => <Compoent {...props} {{[propName]: value}} />}</Consumer>,
-        Compoent);
+module.exports = function consumeContext(consumersMap) {
+    return function(Compoent) {
+        return reduce(consumersMap, reducer, Compoent);
+    };
+};
+
+function reducer(Compoent, Consumer, propName) {
+    return function(props) {
+        return React.createElement(Consumer, null, function(value) {
+            props[propName] = value;
+            return React.createElement(Compoent, props);
+        });
+    };
+}

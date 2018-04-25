@@ -1,1 +1,1 @@
-# react-decorators
+# React-decorators

@@ -10,6 +10,7 @@ describe('@cssModules', () => {
 
     const styles = {
         'div-class':   'div-class-name',
+        'code-class':  'code-class-name',
         'spanClass':   'span-class-name',
         'ignoreClass': 'should-not-appear'
     };
@@ -17,12 +18,15 @@ describe('@cssModules', () => {
     describe('React.Component', () => {
 
         @cssModules(styles)
-        class SimpleComponent extends React.Component {
+        class TestComponent extends React.Component {
 
             render() {
+                const { divClass, spanClass, codeClass } = this.props;
+                const PropsComponent = props => props.child;
                 return (
-                    <div className={this.props.divClass}>
-                        <span className={this.props.spanClass} />
+                    <div className={divClass}>
+                        <span className={spanClass} />
+                        <PropsComponent child={<code className={codeClass} />} />
                     </div>
                 );
             }
@@ -30,9 +34,11 @@ describe('@cssModules', () => {
         }
 
         const el = shallow(
-            <SimpleComponent
+            <TestComponent
                 divClass="div-class"
-                spanClass={[{spanClass: true, ignoreClass: false}, 'extra-class']} />
+                codeClass="code-class"
+                spanClass={[{spanClass: true, ignoreClass: false}, 'extra-class']}
+            />
         );
 
         it('transform a string className', () => {
@@ -47,7 +53,12 @@ describe('@cssModules', () => {
             expect(el.find('span').props().className).to.not.include('should-not-appear');
         });
 
-        it('transform a property element className', () => {});
+        it('transform a property element className', () => {
+            expect(el
+                .find('PropsComponent').shallow()
+                .find('code').props().className
+            ).to.include('code-class-name');
+        });
 
         it('transform className inside a portal', () => {});
 
@@ -57,14 +68,14 @@ describe('@cssModules', () => {
 
     describe('Stateless Component', () => {
 
-        const SimpleComponent = cssModules(styles)(props =>
+        const TestComponent = cssModules(styles)(props =>
             <div className={props.divClass}>
                 <span className={props.spanClass} />
             </div>
         );
 
         const el = shallow(
-            <SimpleComponent
+            <TestComponent
                 divClass="div-class"
                 spanClass={[{spanClass: true, ignoreClass: false}, 'extra-class']} />
         );
