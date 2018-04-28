@@ -1,37 +1,57 @@
 import injectContext from '../inject-context';
-import { shallow } from 'enzyme';
+import { render, shallow } from 'enzyme';
 import { expect } from 'chai';
 import React from 'react';
 
 describe('@injectContext', () => {
 
-    const consumers = {};
+    const themeContext = React.createContext('default');
+    const countContext = React.createContext(42);
+    const thirdContext = React.createContext(true);
 
-    describe('React.Component', () => {
+    const consumers = {
+        theme: themeContext.Consumer,
+        count: countContext.Consumer,
+        third: thirdContext.Consumer,
+    };
 
-        @injectContext(consumers)
-        class TestComponent extends React.Component {
+    @injectContext(consumers)
+    class TestComponent extends React.Component {
 
-            render() {
-                return null;
-            }
-
+        render() {
+            return (
+                <div data-count={this.props.count} title={this.props.title}>
+                        <span>
+                            {this.props.third && this.props.theme}
+                            {this.props.third || this.props.count}
+                        </span>
+                    <div className="children">
+                        {this.props.children}
+                    </div>
+                </div>
+            );
         }
 
-        const el = shallow(
-            <TestComponent />
-        );
+    }
 
+    it('validate all properties have been injected', () => {
+        const el = render(
+            <TestComponent title="my-title">
+                Child
+            </TestComponent>
+        );
+        expect(el.attr('title')).to.equal('my-title');
+        expect(el.find('span').text()).to.equal('default');
+        expect(el.find('.children').text()).to.equal('Child');
     });
 
-    describe('Stateless Component', () => {
-
-        const TestComponent = injectContext(consumers)(props => null);
-
-        const el = shallow(
-            <TestComponent />
+    it('validate that the context Provider works', () => {
+        const el = render(
+            <thirdContext.Provider value={false}>
+                <TestComponent />
+            </thirdContext.Provider>
         );
-
+        expect(el.find('span').text()).to.equal('42');
     });
 
 });
