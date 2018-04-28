@@ -17,6 +17,8 @@ npm install --save react-decorators
 
 ## Usage
 
+**Everything is pretty much under construction**
+
 ## Decorators
 
 - [classNames](#classnames)
