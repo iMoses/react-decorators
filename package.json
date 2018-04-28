@@ -1,6 +1,6 @@
 {
   "name": "react-decorators",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "A collection of react decorators to enhance components capabilities",
   "main": "./index.js",
   "scripts": {
