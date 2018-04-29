@@ -4,7 +4,9 @@
 
 .idea
 .gitignore
+.nyc_output
 .travis.yml
 
 docs
+coverage
 scripts

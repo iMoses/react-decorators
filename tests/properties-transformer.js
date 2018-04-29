@@ -1,4 +1,4 @@
-import propertiesTransformer from '../lib/properties-transformer';
+import propertiesTransformer, { __RewireAPI__ } from '../lib/properties-transformer';
 import { mount, shallow } from 'enzyme';
 import ReactDOM from 'react-dom';
 import { expect } from 'chai';
@@ -9,6 +9,8 @@ import _ from 'lodash';
 describe('propertiesTransformer', () => {
 
     describe('transform functional component', () => {
+
+        const EmptyComponent = propertiesTransformer(() => null, () => {});
 
         const StatelessComponent = propertiesTransformer(
             props => <div {...props} />,
@@ -27,6 +29,7 @@ describe('propertiesTransformer', () => {
                 <ExternalComponent>
                     <h2 id="Another title: this one a bit better...">nested headline</h2>
                 </ExternalComponent>
+                <EmptyComponent />
             </StatelessComponent>
         );
 
@@ -40,12 +43,20 @@ describe('propertiesTransformer', () => {
             expect(el.find(ExternalComponent).shallow().props().id).to.equal('Unaffected!!!');
         });
 
+        it(`validate null elements are treated correctly`, () => {
+            expect(el.find(EmptyComponent).shallow().type()).to.equal(null);
+        });
+
     });
 
     describe('transform React.Component', () => {
 
+        class SubComponent extends React.Component {
+            static subProp = true;
+        }
         const ClassComponent = propertiesTransformer(
-            class extends React.Component {
+            class extends SubComponent {
+                static staticProp = true;
                 render() {
                     return <div {...this.props} />;
                 }
@@ -76,6 +87,12 @@ describe('propertiesTransformer', () => {
 
         it(`validate it doesn't affect external components`, () => {
             expect(el.find(ExternalComponent).shallow().props().id).to.equal('Unaffected!!!');
+        });
+
+        it(`validate inheritance of static properties`, () => {
+            expect(ClassComponent.staticProp).to.equal(true);
+            expect(ClassComponent.hasOwnProperty('subProp')).to.equal(false);
+            expect(ClassComponent.hasOwnProperty('staticProp')).to.equal(true);
         });
 
     });
