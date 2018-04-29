@@ -4,6 +4,7 @@
 
 .idea
 .gitignore
+.travis.yml
 
 docs
 scripts
