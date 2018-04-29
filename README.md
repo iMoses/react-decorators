@@ -1,5 +1,10 @@
 # React-decorators
 
+[![npm/react-decorators](https://nodei.co/npm/react-decorators.png?compact=true)](https://www.npmjs.org/package/react-decorators)
+
+[![Build Status](https://travis-ci.org/iMoses/react-decorators.svg?branch=master)](https://travis-ci.org/iMoses/react-decorators)
+[![Coverage Status](https://coveralls.io/repos/github/iMoses/react-decorators/badge.svg?branch=master)](https://coveralls.io/github/iMoses/react-decorators?branch=master)
+
 _A collection of react decorators to enhance components capabilities._
 
 Feel free to open a PR with your own decorators. For large 
@@ -12,8 +17,6 @@ The package is currently available only on [npm](https://www.npmjs.com/).
 ```shell
 npm install --save react-decorators
 ```
-
-[![npm/react-decorators](https://nodei.co/npm/react-decorators.png?compact=true)](https://www.npmjs.org/package/react-decorators)
 
 ## Usage
 
