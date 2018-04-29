@@ -1,0 +1,9 @@
+*.log
+*.tar
+*.tar.gz
+
+.idea
+.gitignore
+
+docs
+scripts
