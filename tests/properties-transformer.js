@@ -68,6 +68,7 @@ describe('propertiesTransformer', () => {
             }
         );
 
+
         const ExternalComponent = props => <div id="Unaffected!!!" {...props} />;
 
         const el = shallow(
@@ -78,6 +79,7 @@ describe('propertiesTransformer', () => {
                 </ExternalComponent>
             </ClassComponent>
         );
+
 
         it('validate a recursive properties transformation', () => {
             expect(el.find('div').props().id).to.equal('my-class-component');
@@ -90,9 +92,37 @@ describe('propertiesTransformer', () => {
         });
 
         it(`validate inheritance of static properties`, () => {
-            expect(ClassComponent.staticProp).to.equal(true);
-            expect(ClassComponent.hasOwnProperty('subProp')).to.equal(false);
-            expect(ClassComponent.hasOwnProperty('staticProp')).to.equal(true);
+            expect(ClassComponent.subProp, 'subProp').to.equal(true);
+            expect(ClassComponent.staticProp, 'staticProp').to.equal(true);
+            expect(ClassComponent.hasOwnProperty('subProp'), 'hasOwnProperty subProp').to.equal(false);
+            expect(ClassComponent.hasOwnProperty('staticProp'), 'hasOwnProperty staticProp').to.equal(false);
+        });
+
+        it(`validate inheritance keeps constructors static properties`, () => {
+            const ClassComponent = propertiesTransformer(
+                class extends SubComponent {
+                    static staticProp = true;
+                    render() {
+                        return (
+                            <div
+                                data-sub-prop={this.constructor.subProp}
+                                data-static-prop={this.constructor.staticProp}
+                                data-wrong-prop={this.constructor.wrongProp}
+                            />
+                        );
+                    }
+                },
+                props => {
+                    if (props.id) {
+                        props.id = _.kebabCase(props.id);
+                    }
+                }
+            );
+            const el = shallow(<ClassComponent />);
+
+            expect(el.props()['data-sub-prop']).to.equal(true);
+            expect(el.props()['data-static-prop']).to.equal(true);
+            expect(el.props()['data-wrong-prop']).to.not.equal(true);
         });
 
     });
