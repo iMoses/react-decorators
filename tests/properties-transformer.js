@@ -55,8 +55,12 @@ describe('propertiesTransformer', () => {
             static subProp = true;
         }
         const ClassComponent = propertiesTransformer(
-            class extends SubComponent {
+            class MyComponent extends SubComponent {
                 static staticProp = true;
+                constructor(props) {
+                    super(props);
+                    this.state = {test: true};
+                }
                 render() {
                     return <div {...this.props} />;
                 }
@@ -80,6 +84,15 @@ describe('propertiesTransformer', () => {
             </ClassComponent>
         );
 
+
+        it(`validate displayName`, () => {
+            expect(ClassComponent.displayName).to.equal('TransformedComponent(MyComponent)');
+        });
+
+        it(`validate constructor inheritance`, () => {
+            expect(el.state('test')).to.equal(true);
+            expect(el.state('test2')).to.not.equal(true);
+        });
 
         it('validate a recursive properties transformation', () => {
             expect(el.find('div').props().id).to.equal('my-class-component');
