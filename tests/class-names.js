@@ -1,8 +1,6 @@
 import classNames from '../class-names';
-import { shallow, mount } from 'enzyme';
-import ReactDOM from 'react-dom';
+import { shallow } from 'enzyme';
 import { expect } from 'chai';
-import { JSDOM } from 'jsdom';
 import React from 'react';
 
 describe('@classNames', () => {
