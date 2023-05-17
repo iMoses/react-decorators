@@ -67,7 +67,7 @@ An extension of the [`classNames`](#classnames) decorator, it binds the
 [alternate `bind` version](https://github.com/JedWatson/classnames#alternate-bind-version-for-css-modules) 
 for [css-modules](https://github.com/css-modules/css-modules).
 
-```
+```jsx
 import styles from './styles.css';
 
 @cssModules(styles)
